@@ -1,5 +1,6 @@
 import React from "react";
-
+import Learning from "./components/Learning.jsx";
+import Part1d from "./components/Part1d.jsx";
 const Header = ({ course }) => {
   return <h1>{course}</h1>;
 };
@@ -15,7 +16,6 @@ const Part = (part) => {
 };
 
 const Content = ({ parts }) => {
-  console.log(parts);
   return (
     <>
       {parts.map((part, index) => (
@@ -29,7 +29,7 @@ const Total = ({ parts }) => {
   parts.map((part) => (sum += part.exercises));
   return (
     <>
-      <p>Number of Exercises: {sum}</p>
+      <p> Number of Exercises: {sum}</p>
     </>
   );
 };
@@ -57,6 +57,8 @@ function App() {
       <Header course={course.name} />
       <Content parts={course.parts} />
       <Total parts={course.parts} />
+      <Learning />
+      <Part1d />
     </>
   );
 }
