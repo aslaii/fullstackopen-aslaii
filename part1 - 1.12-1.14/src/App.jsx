@@ -9,16 +9,33 @@ const App = () => {
     "Premature optimization is the root of all evil.",
     "Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.",
     "Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients.",
-    "The only way to go fast, is to go well.",
+    "The only way to go fast is to go well.",
   ];
 
   const [selected, setSelected] = useState(0);
+  const [points, setPoints] = useState(new Uint8Array(anecdotes.length));
 
+  const incrementVote = () => {
+    const copy = [...points];
+    copy[selected] += 1;
+    setPoints(copy);
+  };
+
+  const maxVotesIndex = points.indexOf(Math.max(...points));
+  const maxVotesAnecdote = anecdotes[maxVotesIndex];
   return (
     <div>
       {anecdotes[selected]}
       <br />
-      <button onClick={() => setSelected(selected + 1)}>Next Anecdote</button>
+      <p>has {points[selected]} votes</p>
+      <button onClick={incrementVote}>Vote</button>
+      <button onClick={() => setSelected((selected + 1) % anecdotes.length)}>
+        Next Anecdote
+      </button>
+      <h1>Anecdote with most votes</h1>
+      {maxVotesAnecdote}
+      <br />
+      <p> has {points[maxVotesIndex]} votes</p>
     </div>
   );
 };
