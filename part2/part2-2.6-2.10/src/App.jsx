@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import Filter from "./components/Filter";
 import Form from "./components/Form";
 import Persons from "./components/Persons";
@@ -20,41 +19,71 @@ const App = () => {
         setPersons([]); // Ensure persons is always an array
       });
   }, []);
-  console.log("P", persons);
 
   const addPerson = (person) => {
-    if (persons.some((p) => p.name === person.name)) {
-      alert(`${person.name} is already added to the phonebook`);
-      return;
-    }
-    console.log("Name: ", person.name);
-    console.log("Number: ", person.number);
-    const personObject = {
-      name: person.name,
-      number: person.number,
-    };
-    personService
-      .createData(personObject)
-      .then((response) => {
-        console.log("Response", response);
-        setPersons((prevPersons) => prevPersons.concat(response));
-      })
-      .catch((error) => {
-        console.error("Error creating data:", error);
-      });
-  };
+    const existingPerson = persons.find((p) => p.name === person.name);
 
+    if (existingPerson) {
+      if (
+        window.confirm(
+          `${existingPerson.name} is already added to the phonebook, replace the old number with a new one?`
+        )
+      ) {
+        const updatedPerson = { ...existingPerson, number: person.number };
+        personService
+          .updateData(existingPerson.id, updatedPerson)
+          .then((updatedData) => {
+            setPersons(
+              persons.map((p) => (p.id !== existingPerson.id ? p : updatedData))
+            );
+          })
+          .catch((error) => {
+            console.error("Error updating data:", error);
+          });
+      }
+    } else {
+      console.log("Name: ", person.name);
+      console.log("Number: ", person.number);
+      const personObject = {
+        name: person.name,
+        number: person.number,
+      };
+      personService
+        .createData(personObject)
+        .then((response) => {
+          setPersons((prevPersons) => prevPersons.concat(response));
+        })
+        .catch((error) => {
+          console.error("Error creating data:", error);
+        });
+    }
+  };
   const handleFilterChange = (filter) => {
-    // Update the newFilter state on filter change
     setNewFilter(filter);
   };
-  console.log("Persons", persons);
   const filteredPersons = persons.filter(
     (person) =>
       person &&
       person.name &&
       person.name.toLowerCase().includes(newFilter.toLowerCase())
   );
+  const handleDelete = (id) => {
+    const personToDelete = persons.find((p) => p.id === id);
+    if (
+      window.confirm(
+        `Are you sure you want to delete ${personToDelete.name} ? `
+      )
+    ) {
+      personService
+        .deleteData(id)
+        .then(() => {
+          setPersons(persons.filter((p) => p.id !== id));
+        })
+        .catch((error) => {
+          console.error("Error Delete Data: ", error);
+        });
+    }
+  };
 
   return (
     <div>
@@ -67,7 +96,7 @@ const App = () => {
       <Form addPerson={addPerson} />
 
       <h3>Numbers</h3>
-      <Persons persons={filteredPersons} />
+      <Persons persons={filteredPersons} handleDelete={handleDelete} />
     </div>
   );
 };
