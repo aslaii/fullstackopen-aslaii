@@ -1,4 +1,5 @@
 const express = require("express");
+const morgan = require("morgan");
 const app = express();
 
 let persons = [
@@ -25,6 +26,7 @@ let persons = [
 ];
 
 app.use(express.json());
+app.use(morgan("combined"));
 
 app.get("/api/persons", (req, res) => {
   res.json(persons);
@@ -54,7 +56,7 @@ const generateID = () => {
   return randomID;
 };
 
-app.post("/api/persons", (req, res) => {
+app.post("/api/persons", function (req, res) {
   const body = req.body;
   const nameExist = persons.find((person) => person.name === body.name);
   if (nameExist) {
@@ -82,6 +84,8 @@ app.post("/api/persons", (req, res) => {
 
   persons = persons.concat(person);
   res.json(persons);
+  const postLog = JSON.stringify(persons);
+  console.log(postLog);
 });
 
 const PORT = 3001;
