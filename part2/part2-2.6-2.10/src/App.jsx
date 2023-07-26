@@ -3,6 +3,7 @@ import Filter from "./components/Filter";
 import Form from "./components/Form";
 import Persons from "./components/Persons";
 import personService from "./services/person";
+import "./index.css";
 
 const App = () => {
   const [newFilter, setNewFilter] = useState("");
